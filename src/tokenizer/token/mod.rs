@@ -50,6 +50,20 @@ impl Token {
 
         Some(token)
     }
+
+    /// テスト用にxmlで書き出す関数
+    pub fn to_xml(&self) -> String {
+        match self {
+            Token::Keyword(t) => format!("<keyword> {} </keyword>", t),
+            Token::Symbol(t) if t == "<" => format!("<symbol> &lt; </symbol>"),
+            Token::Symbol(t) if t == ">" => format!("<symbol> &gt; </symbol>"),
+            Token::Symbol(t) if t == "&" => format!("<symbol> &amp; </symbol>"),
+            Token::Symbol(t) => format!("<symbol> {} </symbol>", t),
+            Token::Integer(t) => format!("<integerConstant> {} </integerConstant>", t),
+            Token::String(t) => format!("<stringConstant> {} </stringConstant>", t),
+            Token::Identifier(t) => format!("<identifier> {} </identifier>", t),
+        }
+    }
 }
 
 #[cfg(test)]
