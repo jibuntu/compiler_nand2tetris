@@ -81,7 +81,7 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                     '{' | '}' | '(' | ')' | '[' | ']' | '.' | ',' | ';' | '+' | 
                     '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' => {
                         // symbolのトークンとしてreturnする
-                        return Some(Token::Symbol(c.to_string()))
+                        return Some(Token::Symbol(c))
                     },
                     // 数字の場合
                     '0'..='9' => {
