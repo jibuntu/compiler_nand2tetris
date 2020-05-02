@@ -28,8 +28,7 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Token> {
-        let mut s = String::new();
-        'outer: loop {
+        loop {
             match self.stream.matches(&["/*", "//"]) {
                 // ブロックコメントの場合
                 Matches::Str("/*") => {
@@ -40,9 +39,9 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                             Matches::Str(_) => break,
                             // 関係の無い文字は飛ばす
                             Matches::Char(_) => (), 
-                            // コメントのまま終端まで読んだらouterの
-                            // ループを抜ける
-                            Matches::None => break 'outer
+                            // ブロックコメントのまま終端まで読んだらNoneを
+                            // 返す
+                            Matches::None => return None
                         }
                     }
                 },
@@ -55,44 +54,25 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                             Matches::Str(_) => break,
                             // 関係の無い文字は飛ばす
                             Matches::Char(_) => (),
-                            // コメントのまま終端まで読んだらouterの
-                            // ループを抜ける
-                            Matches::None => break 'outer
+                            // 行コメントのまま終端まで読んだらNoneを返す
+                            Matches::None => return None
                         }
                     }
                 },
                 Matches::Str(_) => panic!(),
                 Matches::Char(c) => match c {
-                    // asciiコードの0から32までの場合
-                    '\x00'..=' ' => {
-                        // すでにトークンがある場合はトークンの分かれ目の
-                        // になるので、今までのトークン排出するためbreakする
-                        // そうでない場合は何もしない
-                        if 0 < s.len() {
-                            break;
-                        }
-                    },
-                    // ダブルクオートの場合
                     '"' => {
-                        // すでにトークンがある場合は、このトークンを
-                        // 読まなかったことにしてすでにあるとトークンを
-                        // 排出するためにbreakする
-                        // そうでない場合は次のダブルクオートまでの文字を
-                        // トークンとして排出する
-                        if 0 < s.len() {    
-                            let _ = self.stream.seek(SeekFrom::Current(-1));
-                            break;
-                        }
-
+                        // 次のダブルクオートまでの文字をトークンとして排出する
+                        let mut t = String::new();
                         loop {
                             match self.stream.read_char() {
                                 // "が見つかったらそれまでの文字列をトークン
                                 // として返す
                                 Some('"') => {
-                                    return Some(Token::String(s))
+                                    return Some(Token::String(t))
                                 },
                                 // 文字はすべて追加する
-                                Some(c) => s.push(c),
+                                Some(c) => t.push(c),
                                 // 終端まで読んでしまった場合はNoneを返す
                                 None => return None
                             }
@@ -101,31 +81,62 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                     // シンボルの場合
                     '{' | '}' | '(' | ')' | '[' | ']' | '.' | ',' | ';' | '+' | 
                     '-' | '*' | '/' | '&' | '|' | '<' | '>' | '=' | '~' => {
-                        // すでにトークンがある場合は、この文字を
-                        // 読まなかったことにしてすでにあるトークンを
-                        // 排出するするためにbreakする
-                        // そうでない場合はsymbolのトークンとしてreturnする
-                        if 0 < s.len() {    
-                            let _ = self.stream.seek(SeekFrom::Current(-1));
-                            break;
-                        } else {
-                            return Some(Token::Symbol(c.to_string()))
+                        // symbolのトークンとしてreturnする
+                        return Some(Token::Symbol(c.to_string()))
+                    },
+                    // 数字の場合
+                    '0'..='9' => {
+                        let mut t = String::new();
+                        t.push(c);
+                        loop {
+                            match self.stream.read_char() {
+                                Some(c) => match c {
+                                    // 数字の場合はトークンに追加する
+                                    '0'..='9' => t.push(c),
+                                    // それ以外の文字の場合は読まなかったことに
+                                    // してトークンを排出する
+                                    _ => {
+                                        let _ = self.stream.seek(
+                                            SeekFrom::Current(-1));
+                                        return Some(Token::new(t).unwrap())
+                                    }
+                                },
+                                // 終端まで読み終えた場合はトークンを排出する
+                                None => return Some(Token::new(t).unwrap())
+                            }
                         }
                     },
-                    // 通常の文字ならsに追加する
-                    c => s.push(c),
+                    // アルファベットまたはアンダースコアの場合
+                    'A'..='Z' | 'a'..='z' | '_' => {
+                        let mut t = String::new();
+                        t.push(c);
+                        loop {
+                            match self.stream.read_char() {
+                                Some(c) => match c {
+                                    // アルファベット、アンダースコア、数字の
+                                    // 場合はトークンに追加する
+                                    'A'..='Z' | 'a'..='z' | '_' | '0'..='9'
+                                    => t.push(c),
+                                    // それ以外の文字の場合は読まなかったことに
+                                    // してトークンを排出する
+                                    _ => {
+                                        let _ = self.stream.seek(
+                                            SeekFrom::Current(-1));
+                                        return Some(Token::new(t).unwrap())
+                                    }
+                                }
+                                // 終端まで読み終えた場合はトークンを排出する
+                                None => return Some(Token::new(t).unwrap())
+                            }
+                        }
+                    },
+                    // どれにも合致しない文字は無視する
+                    _ => (),
                 },
-                // 終端まで読み終えたらbreakする
-                Matches::None => break
+                // 終端まで読み終えたらNoneを返すする
+                Matches::None => return None
             }
         }
-
-        if 0 < s.len() {
-            // トークンが不明な場合はToken::new()に渡す
-            return Some(Token::new(s).unwrap())
-        }
-
-        None
     }
 }
 
