@@ -37,6 +37,34 @@ pub enum Keyword {
     This
 }
 
+impl Keyword {
+    pub fn to_string(&self) -> String {
+        match self {
+            Keyword::Class => "class",
+            Keyword::Method => "method",
+            Keyword::Function => "function",
+            Keyword::Constructor => "constructor",
+            Keyword::Int => "int",
+            Keyword::Boolean => "boolean",
+            Keyword::Char => "char",
+            Keyword::Void => "void",
+            Keyword::Var => "var",
+            Keyword::Static => "static",
+            Keyword::Field => "field",
+            Keyword::Let => "let",
+            Keyword::Do => "do",
+            Keyword::If => "if",
+            Keyword::Else => "else",
+            Keyword::While => "while",
+            Keyword::Return => "return",
+            Keyword::True => "true",
+            Keyword::False => "false",
+            Keyword::Null => "null",
+            Keyword::This => "this",
+        }.to_string()
+    }
+}
+
 impl Token {
     /// 引数の文字列を元に適切なTokenを返す。無効なtokenの場合はNoneを返す
     pub fn new(t: String) -> Option<Token> {
@@ -99,7 +127,7 @@ impl Token {
     /// テスト用にxmlで書き出す関数
     pub fn to_xml(&self) -> String {
         match self {
-            Token::Keyword(t) => format!("<keyword> {} </keyword>", t),
+            Token::Keyword(t) => format!("<keyword> {} </keyword>", t.to_string()),
             Token::Symbol(t) if *t == '<' => format!("<symbol> &lt; </symbol>"),
             Token::Symbol(t) if *t == '>' => format!("<symbol> &gt; </symbol>"),
             Token::Symbol(t) if *t == '&' => format!("<symbol> &amp; </symbol>"),
@@ -114,13 +142,14 @@ impl Token {
 #[cfg(test)]
 mod test {
     use super::Token;
+    use super::Keyword;
 
     #[test]
     fn test_token_new() {
         assert_eq!(Token::new("(".to_string()), 
                    Some(Token::Symbol('(')));
         assert_eq!(Token::new("class".to_string()), 
-                   Some(Token::Keyword("class".to_string())));
+                   Some(Token::Keyword(Keyword::Class)));
         assert_eq!(Token::new("0".to_string()), 
                    Some(Token::Integer(0)));
         assert_eq!(Token::new("20".to_string()), 
