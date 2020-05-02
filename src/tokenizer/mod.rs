@@ -94,13 +94,12 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                             break;
                         }
 
-                        s.push(c);
                         loop {
                             match self.stream.read_char() {
-                                // "が見つかったらouterのloopを抜ける
+                                // "が見つかったらそれまでの文字列をトークン
+                                // として返す
                                 Some('"') => {
-                                    s.push(c);
-                                    break 'outer
+                                    return Some(Token::String(s))
                                 },
                                 // 文字はすべて追加する
                                 Some(c) => s.push(c),
@@ -120,8 +119,7 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                             let _ = self.stream.seek(SeekFrom::Current(-1));
                             break;
                         } else {
-                            s.push(c);
-                            break;
+                            return Some(Token::Symbol(c.to_string()))
                         }
                     },
                     // 通常の文字ならsに追加する
@@ -133,7 +131,8 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
         }
 
         if 0 < s.len() {
-            return Some(Token::new(&s))
+            // トークンが不明な場合はToken::new()に渡す
+            return Some(Token::new(s).unwrap())
         }
 
         None
@@ -245,63 +244,67 @@ mod test {
     #[test]
     fn test_tokenizer_next() {
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo".to_string()));
         assert_eq!(tokenizer.next(), None);
 
         let mut tokenizer = Tokenizer::new(Cursor::new("/*aiueo*/aiueo2"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo2")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo2".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo2/*aiueo*/"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo2")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo2".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo2//aiueo"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo2")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo2".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo*aiueo2"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo")));
-        assert_eq!(tokenizer.next(), Some(Token::new("*")));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo2")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("*".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("aiueo2".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo\"aiueo2\"aiueo3"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo")));
-        assert_eq!(tokenizer.next(), Some(Token::new("\"aiueo2\"")));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo3")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("\"aiueo2\"".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("aiueo3".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo\"\"aiueo3"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo")));
-        assert_eq!(tokenizer.next(), Some(Token::new("\"\"")));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo3")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("\"\"".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("aiueo3".to_string()));
 
         let mut tokenizer = Tokenizer::new(Cursor::new("aiueo *   aiueo2"));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo")));
-        assert_eq!(tokenizer.next(), Some(Token::new("*")));
-        assert_eq!(tokenizer.next(), Some(Token::new("aiueo2")));
+        assert_eq!(tokenizer.next(), Token::new("aiueo".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("*".to_string()));
+        assert_eq!(tokenizer.next(), Token::new("aiueo2".to_string()));
 
-        let cursor =Cursor::new(r#"
+        let c = Cursor::new(r#"
         aiueo
         *
 
 
         aiueo2
         "#);
-        let result = ["aiueo", "*", "aiueo2"];
-        assert_eq!(Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
-                   result.iter().map(|s| Token::new(s)).collect::<Vec<Token>>());
+        let r = ["aiueo", "*", "aiueo2"];
+        assert_eq!(
+            Tokenizer::new(c).into_iter().map(|t| t).collect::<Vec<Token>>(),
+            r.iter().map(|s| Token::new(s.to_string()).unwrap()).collect::<Vec<Token>>()
+        );
 
-        let cursor =Cursor::new(r#"
+        let cursor = Cursor::new(r#"
         aiueo void () {}
         aiueo2 int () {
             return 1 * 2
         }
         "#);
-        let result = [
+        let r = [
             "aiueo", "void", "(", ")", "{", "}", "aiueo2", "int", "(", ")", 
             "{", "return", "1", "*", "2", "}"
         ];
-        assert_eq!(Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
-                   result.iter().map(|s| Token::new(s)).collect::<Vec<Token>>());
+        assert_eq!(
+            Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
+            r.iter().map(|s| Token::new(s.to_string()).unwrap()).collect::<Vec<Token>>()
+        );
 
-        let cursor =Cursor::new(r#"
+        let cursor = Cursor::new(r#"
         aiueo void() {
             let c=a/*
             aiueo
@@ -310,13 +313,15 @@ mod test {
             let b;//aiueo
         }
         "#);
-        let result = [
+        let r = [
             "aiueo", "void", "(", ")", "{", "let", "c", "=", "a", "+", "b", 
             ";", "let", "a", ";", "let", "b", ";", "}"
         ];
-        assert_eq!(Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
-                   result.iter().map(|s| Token::new(s)).collect::<Vec<Token>>());
-        
+        assert_eq!(
+            Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
+            r.iter().map(|s| Token::new(s.to_string()).unwrap()).collect::<Vec<Token>>()
+        );
+    
     } 
 
     #[test]
