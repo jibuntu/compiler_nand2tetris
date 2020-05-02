@@ -30,7 +30,7 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
     fn next(&mut self) -> Option<Token> {
         let mut s = String::new();
         'outer: loop {
-            match self.stream.matches(&["/*", "//"]) {
+            match self.stream.matches(&["/*", "//", "\r\n", "\n"]) {
                 // ブロックコメントの場合
                 Matches::Str("/*") => {
                     // 次の*/まで飛ばす
@@ -50,15 +50,24 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                 Matches::Str("//") => {
                     // 次の\nまで飛ばす
                     loop {
-                        match self.stream.read_char() {
-                            // \nが見つかったらloopを抜ける
-                            Some('\n') => break,
+                        match self.stream.matches(&["\r\n", "\n"]) {
+                            // \r\nまたは\nが見つかったらloopを抜ける
+                            Matches::Str(_) => break,
                             // 関係の無い文字は飛ばす
-                            Some(_) => (),
+                            Matches::Char(_) => (),
                             // コメントのまま終端まで読んだらouterの
                             // ループを抜ける
-                            None => break 'outer
+                            Matches::None => break 'outer
                         }
+                    }
+                },
+                // 改行の場合
+                Matches::Str("\r\n") | Matches::Str("\n") => {
+                    // すでにトークンがある場合の改行はトークンの分かれ目
+                    // になるので、今までのトークン排出するためbreakする
+                    // そうでない場合はただの改行なので何もしない
+                    if 0 < s.len() {
+                        break;
                     }
                 },
                 // 引数にない文字列が帰ってくることはありえない
@@ -69,15 +78,6 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                         // すでにトークンがある場合の空白はトークンの分かれ目の
                         // になるので、今までのトークン排出するためbreakする
                         // そうでない場合はただの空白なので何もしない
-                        if 0 < s.len() {
-                            break;
-                        }
-                    },
-                    // 改行の場合
-                    '\n' => {
-                        // すでにトークンがある場合の改行はトークンの分かれ目
-                        // になるので、今までのトークン排出するためbreakする
-                        // そうでない場合はただの改行なので何もしない
                         if 0 < s.len() {
                             break;
                         }
@@ -321,7 +321,6 @@ mod test {
             Tokenizer::new(cursor).into_iter().map(|t| t).collect::<Vec<Token>>(),
             r.iter().map(|s| Token::new(s.to_string()).unwrap()).collect::<Vec<Token>>()
         );
-    
     } 
 
     #[test]
