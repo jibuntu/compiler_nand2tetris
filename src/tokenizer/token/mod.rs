@@ -1,5 +1,6 @@
 //! Tokenは１つのtokenに対応する
 use std::str::FromStr;
+use std::string::ToString;
 
 /// Tokenの種類の詳細は233ページに書いてある。Integerは0から32767までの整数。
 #[derive(Debug, PartialEq)]
@@ -136,6 +137,12 @@ impl Token {
             Token::String(t) => format!("<stringConstant> {} </stringConstant>", t),
             Token::Identifier(t) => format!("<identifier> {} </identifier>", t),
         }
+    }
+}
+
+impl ToString for Token {
+    fn to_string(&self) -> String {
+        self.to_xml()
     }
 }
 
