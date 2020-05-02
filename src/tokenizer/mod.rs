@@ -30,7 +30,7 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
     fn next(&mut self) -> Option<Token> {
         let mut s = String::new();
         'outer: loop {
-            match self.stream.matches(&["/*", "//", "\r\n", "\n"]) {
+            match self.stream.matches(&["/*", "//"]) {
                 // ブロックコメントの場合
                 Matches::Str("/*") => {
                     // 次の*/まで飛ばす
@@ -61,20 +61,10 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                         }
                     }
                 },
-                // 改行の場合
-                Matches::Str("\r\n") | Matches::Str("\n") => {
-                    // すでにトークンがある場合の改行はトークンの分かれ目
-                    // になるので、今までのトークン排出するためbreakする
-                    // そうでない場合はただの改行なので何もしない
-                    if 0 < s.len() {
-                        break;
-                    }
-                },
-                // 引数にない文字列が帰ってくることはありえない
                 Matches::Str(_) => panic!(),
                 Matches::Char(c) => match c {
-                    // 空白またはタブの場合
-                    ' ' | '\t' => {
+                    // asciiコードの0から32までの場合
+                    '\x00'..=' ' => {
                         // すでにトークンがある場合はトークンの分かれ目の
                         // になるので、今までのトークン排出するためbreakする
                         // そうでない場合は何もしない
