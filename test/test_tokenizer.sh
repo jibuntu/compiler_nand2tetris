@@ -11,5 +11,7 @@ function test () {
 }
 
 cargo build
-test ../../Square/Square.jack ../../Square/SquareT.xml
+test ../../ArrayTest/Main.jack ../../ArrayTest/MainT.xml
 test ../../Square/Main.jack ../../Square/MainT.xml
+test ../../Square/SquareGame.jack ../../Square/SquareGameT.xml
+test ../../Square/Square.jack ../../Square/SquareT.xml
