@@ -1,4 +1,4 @@
- std::io::{Read, Write, Seek};
+use std::io::{Read, Write, Seek};
 
 use super::tokenizer::Tokenizer;
 use super::tokenizer::token::Token;
@@ -6,13 +6,15 @@ use super::tokenizer::token::Keyword;
 
 
 macro_rules! ErrUnexpect {
-    ($t:expr, $n:expr) => {
-        Err(format!("unexpected token: '{}' at line {}", $t, $n))
+    ($self:expr) => {
+        Err(format!("unexpected token: '{}' at line {}", 
+                    $self.tokenizer.get_current_token().unwrap().to_string(),
+                    $self.tokenizer.get_line_number()))
     };
 }
 
 pub struct CompilationEngine<R, W> {
-    tokenizer: Tokenizer<R>,
+    pub tokenizer: Tokenizer<R>,
     output: W,
 }
 
@@ -24,78 +26,61 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         }
     }
 
-    pub fn compile_file(&mut self) -> Result<(), String> {
-        match self.tokenizer.next() {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Class) => {
-                    let _ = self.output.write(b"<class>\n");
-                    let _ = self.output.write(t.to_xml().as_bytes());
-                    let _ = self.output.write(b"\n");
-                    self.compile_class()?;
-                    let _ = self.output.write(b"</class>\n");
-                },
-                _ => {
-                    return ErrUnexpect!(t.to_string(),
-                                        self.tokenizer.get_line_number())
-                }
-            },
-            None => ()
-        }
-
-        Ok(())
-    }
-
     /// tokenizerからクラスをコンパイルし、結果を書き込む。
     /// 最初はvmコードではなくxmlの構文木を書き書き込む。
-    fn compile_class(&mut self) -> Result<(), String> {
-        match self.tokenizer.next() {
-            Some(Token::Identifier(t)) => {
-                let _ = self.output.write(
-                    format!("{}\n", Token::Identifier(t).to_xml()).as_bytes());
+    pub fn compile_class(&mut self) -> Result<(), String> {
+        let _ = self.output.write(b"<class>\n");
+        let t = match self.tokenizer.get_current_token() {
+            Some(t) => match t {
+                Token::Keyword(Keyword::Class) => t,
+                _ => return ErrUnexpect!(self)
+            },
+            _ => return Err("class がありません".to_string())
+        };
+        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
+
+        let t = match self.tokenizer.advance() {
+            Some(t) => match t {
+                Token::Identifier(_) => t,
+                _ => return ErrUnexpect!(self)
             },
             _ => return Err("クラス名がありません".to_string())
-        }
+        };
+        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
 
-        match self.tokenizer.next() {
-            Some(t) if t == Token::Symbol('{') => {
-                let _ = self.output.write(t.to_xml().as_bytes());
-                let _ = self.output.write(b"\n");
+        let t = match self.tokenizer.advance() {
+            Some(t) => match t {
+                Token::Symbol('{') => t,
+                _ => return ErrUnexpect!(self),
             },
             _ => return Err("'{' トークンがありません".to_string())
-        }
+        };
+        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
 
         // classVarDecもしくはsubroutineDec、'}'
-        while let Some(t) = self.tokenizer.next() { 
+        while let Some(t) = self.tokenizer.advance() { 
             match t {
                 // classVarDecの場合 
                 Token::Keyword(Keyword::Static) | 
                 Token::Keyword(Keyword::Field) => {
-                    let _ = self.output.write(b"<classVarDec>\n");
-                    let _ = self.output.write(t.to_xml().as_bytes());
-                    let _ = self.output.write(b"\n");
                     self.class_var_dec()?;
-                    let _ = self.output.write(b"</classVarDec>\n");
                 },
                 // subroutineDecの場合
                 Token::Keyword(Keyword::Constructor) |
                 Token::Keyword(Keyword::Function) | 
                 Token::Keyword(Keyword::Method) => {
-                    let _ = self.output.write(b"<subroutineDec>\n");
-                    let _ = self.output.write(t.to_xml().as_bytes());
-                    let _ = self.output.write(b"\n");
                     self.subroutine_dec()?;
-                    let _ = self.output.write(b"</subroutineDec>\n");
                 },
                 // '}'まで読み終えたらOk(())を返す
                 Token::Symbol('}') => {
                     let _ = self.output.write(t.to_xml().as_bytes());
                     let _ = self.output.write(b"\n");
+                    let _ = self.output.write(b"</class>\n");
                     return Ok(())
                 },
                 // それ以外はエラーになる
                 _ => {
-                    return ErrUnexpect!(t.to_string(),
-                                        self.tokenizer.get_line_number())
+                    return ErrUnexpect!(self)
                 }
             }
         }
@@ -120,14 +105,15 @@ mod test {
     use super::Tokenizer;
 
     #[test]
-    fn test_compilation_engine() {
-        let t = Tokenizer::new(Cursor::new("test{}"));
+    fn test_compilation_engine_compile_class() {
+        let t = Tokenizer::new(Cursor::new("class test{}"));
         let mut c = CompilationEngine::new(t, Cursor::new(Vec::new()));
+        c.tokenizer.advance();
         assert_eq!(c.compile_class(), Ok(()));
 
         let s: String = c.output.get_ref().iter().map(|b|*b as char).collect();
         assert_eq!(&s.replace(" ","").replace("\n",""), 
-                   "<identifier>test</identifier><symbol>{</symbol><symbol>}</symbol>");
+                   "<class><keyword>class</keyword><identifier>test</identifier><symbol>{</symbol><symbol>}</symbol></class>");
 
         let t = Tokenizer::new(Cursor::new("test{"));
         let mut c = CompilationEngine::new(t, Cursor::new(Vec::new()));

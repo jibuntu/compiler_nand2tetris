@@ -29,7 +29,8 @@ fn main() {
     let t = Tokenizer::new(reader);
     let mut c = CompilationEngine::new(t, o);
 
-    match c.compile_file() {
+    c.tokenizer.advance();
+    match c.compile_class() {
         Ok(()) => (),
         Err(e) => println!("error: {}", e)
     }
