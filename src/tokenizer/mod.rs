@@ -15,6 +15,7 @@ use token::Token;
 pub struct Tokenizer<R> {
     stream: BufReader<R>,
     line_number: usize,
+    token: Option<Token>,
 }
 
 impl<R: Read + Seek> Tokenizer<R> {
@@ -22,11 +23,24 @@ impl<R: Read + Seek> Tokenizer<R> {
         Tokenizer {
             stream: BufReader::new(stream),
             line_number: 1, // 行番号は1から始める
+            token: None,
         }
     }
 
     pub fn get_line_number(&self) -> usize {
         self.line_number
+    }
+
+    /// 現在のトークンへの参照を返す
+    pub fn get_current_token(&self) -> Option<&Token> {
+        self.token.as_ref()
+    }
+
+    /// self.next()を実行しトークン進め、そのトークンを構造体で保持する。
+    /// 戻り値は取得したトークンへの参照
+    pub fn advance(&mut self) -> Option<&Token> {
+        self.token = self.next();
+        self.token.as_ref()
     }
 }
 
