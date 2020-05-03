@@ -1,2 +1,4 @@
 class test {
+  static int name;
+  field int name, name2;
 }

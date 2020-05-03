@@ -2,5 +2,19 @@
 <keyword> class </keyword>
 <identifier> test </identifier>
 <symbol> { </symbol>
+<classVarDec>
+  <keyword> static </keyword>
+  <keyword> int </keyword>
+  <identifier> name </identifier>
+  <symbol> ; </symbol>
+</classVarDec>
+<classVarDec>
+  <keyword> field </keyword>
+  <keyword> int </keyword>
+  <identifier> name </identifier>
+  <symbol> , </symbol>
+  <identifier> name2 </identifier>
+  <symbol> ; </symbol>
+</classVarDec>
 <symbol> } </symbol>
 </class>

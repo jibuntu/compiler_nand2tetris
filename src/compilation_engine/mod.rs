@@ -13,6 +13,36 @@ macro_rules! ErrUnexpect {
     };
 }
 
+macro_rules! MatchType {
+    ($token:expr, $line_number:expr) => {
+        match $token {
+            Some(t) => match t {
+                Token::Keyword(Keyword::Int) | Token::Keyword(Keyword::Char) |
+                Token::Keyword(Keyword::Boolean) |
+                Token::Identifier(_) => t,
+                _ => return Err(format!("unexpected token: '{}' at line {}",
+                                        t.to_string(),
+                                        $line_number))
+            },
+            _ => return Err("type がありません".to_string())
+        }
+    }
+}
+
+macro_rules! MatchVarName {
+    ($token:expr, $line_number:expr) => {
+        match $token {
+            Some(t) => match t {
+                Token::Identifier(_) => t,
+                _ => return Err(format!("unexpected token: '{}' at line {}",
+                                        t.to_string(),
+                                        $line_number))
+            },
+            _ => return Err("varName がありません".to_string())
+        }
+    }
+}
+
 pub struct CompilationEngine<R, W> {
     pub tokenizer: Tokenizer<R>,
     output: W,
@@ -89,8 +119,49 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         Err("'}' トークンがありません".to_string())
     }
     
-    fn class_var_dec(&self) -> Result<(), String> {
-        Ok(())
+    fn class_var_dec(&mut self) -> Result<(), String> {
+        let _ = self.output.write(b"<classVarDec>\n");
+
+        match self.tokenizer.get_current_token() {
+            Some(t) => match t {
+                Token::Keyword(Keyword::Static) |
+                Token::Keyword(Keyword::Field) => {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                },
+                _ => return ErrUnexpect!(self)
+            },
+            None => return Err("staitc もしくは field がありません".to_string())
+        }
+
+        let t = MatchType!(self.tokenizer.advance(), 
+                           self.tokenizer.get_line_number());
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchVarName!(self.tokenizer.advance(), 
+                           self.tokenizer.get_line_number());
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        while let Some(t) = self.tokenizer.advance() {
+            // 次に';'が来たらreturn、','が来たら繰り返す。それ以外ならエラーを
+            // 返す
+            match t {
+                Token::Symbol(';') => {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                    let _ = self.output.write(b"</classVarDec>\n");
+                    return Ok(())
+                },
+                Token::Symbol(',') => {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                },
+                _ => return ErrUnexpect!(self)
+            }
+
+            let t = MatchVarName!(self.tokenizer.advance(), 
+                                  self.tokenizer.get_line_number());
+            let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+        }
+
+        Err("';' がありません".to_string())
     }
 
     fn subroutine_dec(&self) -> Result<(), String> {
