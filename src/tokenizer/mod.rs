@@ -13,14 +13,20 @@ use token::Token;
 
 
 pub struct Tokenizer<R> {
-    stream: BufReader<R>
+    stream: BufReader<R>,
+    line_number: usize,
 }
 
 impl<R: Read + Seek> Tokenizer<R> {
     pub fn new(stream: R) -> Tokenizer<R> {
         Tokenizer {
-            stream: BufReader::new(stream)
+            stream: BufReader::new(stream),
+            line_number: 1, // 行番号は1から始める
         }
+    }
+
+    pub fn get_line_number(&self) -> usize {
+        self.line_number
     }
 }
 
@@ -61,6 +67,11 @@ impl<R: Read + Seek> Iterator for Tokenizer<R> {
                 },
                 Matches::Str(_) => panic!(),
                 Matches::Char(c) => match c {
+                    // 改行の場合
+                    '\n' => {
+                        // 行数をインクリメントする
+                        self.line_number += 1;
+                    }
                     '"' => {
                         // 次のダブルクオートまでの文字をトークンとして排出する
                         let mut t = String::new();
@@ -321,6 +332,24 @@ mod test {
             r.iter().map(|s| Token::new(s.to_string()).unwrap()).collect::<Vec<Token>>()
         );
     } 
+
+    #[test]
+    fn test_tokenizer_get_line_number() {
+        let c = Cursor::new(r#"
+        aiueo {
+        }
+        "#);
+
+        let mut t = Tokenizer::new(c);
+        assert_eq!(t.get_line_number(), 1);
+        t.next();
+        assert_eq!(t.get_line_number(), 2);
+        t.next();
+        t.next();
+        assert_eq!(t.get_line_number(), 3);
+        t.next();
+        assert_eq!(t.get_line_number(), 4);
+    }
 
     #[test]
     fn test_bufreader_matches() {
