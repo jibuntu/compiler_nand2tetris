@@ -4,6 +4,8 @@ use std::env;
 
 mod tokenizer;
 use tokenizer::Tokenizer;
+mod compilation_engine;
+use compilation_engine::CompilationEngine;
 
 
 fn main() {
@@ -15,10 +17,20 @@ fn main() {
         None => return println!("ファイル名を指定してください")
     };
 
+    let o = match env::args().nth(2) {
+        Some(f) => match File::create(f) {
+            Ok(f) => f,
+            Err(_) => return println!("ファイルが開けません")
+        }
+        None => return println!("出力するファイル名を指定してください")
+    };
+
     let reader = BufReader::new(f);
-    println!("<tokens>");
-    for token in Tokenizer::new(reader) {
-        println!("  {}", token.to_xml());
+    let t = Tokenizer::new(reader);
+    let mut c = CompilationEngine::new(t, o);
+
+    match c.compile_file() {
+        Ok(()) => (),
+        Err(e) => println!("error: {}", e)
     }
-    println!("</tokens>");
 }
