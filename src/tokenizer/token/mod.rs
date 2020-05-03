@@ -142,7 +142,16 @@ impl Token {
 
 impl ToString for Token {
     fn to_string(&self) -> String {
-        self.to_xml()
+        match self {
+            Token::Keyword(k) => k.to_string(),
+            Token::Symbol(c) => {
+                let mut s = String::new();
+                s.push(*c);
+                s
+            },
+            Token::Integer(i) => i.to_string(),
+            Token::String(s) | Token::Identifier(s) => s.clone()
+        }
     }
 }
 
