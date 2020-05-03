@@ -29,7 +29,7 @@ macro_rules! MatchType {
     }
 }
 
-macro_rules! MatchVarName {
+macro_rules! MatchIdentifier {
     ($token:expr, $line_number:expr) => {
         match $token {
             Some(t) => match t {
@@ -38,7 +38,7 @@ macro_rules! MatchVarName {
                                         t.to_string(),
                                         $line_number))
             },
-            _ => return Err("varName がありません".to_string())
+            _ => return Err("identifier がありません".to_string())
         }
     }
 }
@@ -137,7 +137,7 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                            self.tokenizer.get_line_number());
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        let t = MatchVarName!(self.tokenizer.advance(), 
+        let t = MatchIdentifier!(self.tokenizer.advance(), 
                            self.tokenizer.get_line_number());
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
@@ -156,8 +156,8 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                 _ => return ErrUnexpect!(self)
             }
 
-            let t = MatchVarName!(self.tokenizer.advance(), 
-                                  self.tokenizer.get_line_number());
+            let t = MatchIdentifier!(self.tokenizer.advance(), 
+                                     self.tokenizer.get_line_number());
             let _ = self.output.write((t.to_xml() + "\n").as_bytes());
         }
 
