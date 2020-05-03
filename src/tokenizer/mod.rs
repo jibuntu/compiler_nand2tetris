@@ -8,7 +8,7 @@ use std::io::SeekFrom;
 use std::io::Seek;
 use std::iter::Iterator;
 
-mod token;
+pub mod token;
 use token::Token;
 
 
