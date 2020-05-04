@@ -5,44 +5,37 @@ use super::tokenizer::token::Token;
 use super::tokenizer::token::Keyword;
 
 
-macro_rules! ErrUnexpect {
-    ($self:expr, $expect:expr) => {
-        Err(format!("unexpected token: '{}' at line {}. 予期されるトークンは {} です。", 
-                    $self.tokenizer.get_current_token().unwrap().to_string(),
-                    $self.tokenizer.get_line_number(),
-                    $expect))
+macro_rules! ErrReachedEnd {
+    () => {
+        Err("reached end of file while parsing".to_string())
     };
 }
 
-macro_rules! MatchType {
+macro_rules! ErrUnexpect {
     ($token:expr, $line_number:expr) => {
-        match $token {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Int) | Token::Keyword(Keyword::Char) |
-                Token::Keyword(Keyword::Boolean) |
-                Token::Identifier(_) => t,
-                _ => return Err(format!("unexpected token: '{}' at line {}. 予期されるトークンは 'int', 'char', 'boolean' or className です。",
-                                        t.to_string(),
-                                        $line_number))
-            },
-            _ => return Err("type がありません".to_string())
-        }
-    }
+        Err(format!("unexpected token: '{}' at line {}.", 
+                    $token.to_string(),
+                    $line_number))
+    };
 }
 
-macro_rules! MatchIdentifier {
-    ($token:expr, $line_number:expr, $expect:expr) => {
+// 引数のトークンにマッチしたらそのトークンを返す。
+// そうでなければエラーをreturnする
+macro_rules! MatchToken {
+    ($token:expr, $line_number:expr, $( $expected_token:pat ),*) => {
         match $token {
             Some(t) => match t {
-                Token::Identifier(_) => t,
-                _ => return Err(format!("unexpected token: '{}' at line {}. 予期されるトークンは {} です。",
-                                        t.to_string(),
-                                        $line_number,
-                                        $expect))
+                $(
+                    $expected_token => t,
+                )*
+                // 予期しないトークンのときはエラーを返す
+                _ => return ErrUnexpect!(t, $line_number)
             },
-            _ => return Err("identifier がありません".to_string())
+            // tokenがNoneになるのは最後まで読み終えたときなのでエラーを返す
+            // javacのエラー文を流用
+            None => return ErrReachedEnd!()
         }
-    }
+    };
 }
 
 pub struct CompilationEngine<R, W> {
@@ -62,32 +55,21 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
     /// 最初はvmコードではなくxmlの構文木を書き書き込む。
     pub fn compile_class(&mut self) -> Result<(), String> {
         let _ = self.output.write(b"<class>\n");
-        let t = match self.tokenizer.get_current_token() {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Class) => t,
-                _ => return ErrUnexpect!(self, "'class'")
-            },
-            _ => return Err("class がありません".to_string())
-        };
-        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
 
-        let t = match self.tokenizer.advance() {
-            Some(t) => match t {
-                Token::Identifier(_) => t,
-                _ => return ErrUnexpect!(self, "className")
-            },
-            _ => return Err("クラス名がありません".to_string())
-        };
-        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Class));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        let t = match self.tokenizer.advance() {
-            Some(t) => match t {
-                Token::Symbol('{') => t,
-                _ => return ErrUnexpect!(self, "'{'"),
-            },
-            _ => return Err("'{' トークンがありません".to_string())
-        };
-        let _ = self.output.write(format!("{}\n", t.to_xml()).as_bytes());
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('{'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         // classVarDecもしくはsubroutineDec、'}'
         while let Some(t) = self.tokenizer.advance() { 
@@ -105,43 +87,39 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                 },
                 // '}'まで読み終えたらOk(())を返す
                 Token::Symbol('}') => {
-                    let _ = self.output.write(t.to_xml().as_bytes());
-                    let _ = self.output.write(b"\n");
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
                     let _ = self.output.write(b"</class>\n");
                     return Ok(())
                 },
                 // それ以外はエラーになる
-                _ => {
-                    return ErrUnexpect!(self, "'static', 'field', 'constructor', 'function', 'method' or '}'")
-                }
+                _ => return ErrUnexpect!(t, self.tokenizer.get_line_number())
             }
         }
 
-        // '}'を見つけずに最後まで読み終えたら
-        Err("'}' トークンがありません".to_string())
+        // '}'を見つけずに最後まで読み終えたらエラーを返す
+        ErrReachedEnd!()
     }
     
     fn class_var_dec(&mut self) -> Result<(), String> {
         let _ = self.output.write(b"<classVarDec>\n");
 
-        match self.tokenizer.get_current_token() {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Static) |
-                Token::Keyword(Keyword::Field) => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "'static' or 'field'")
-            },
-            None => return Err("'staitc' or 'field' がありません".to_string())
-        }
-
-        let t = MatchType!(self.tokenizer.advance(), 
-                           self.tokenizer.get_line_number());
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Static),
+                            Token::Keyword(Keyword::Field));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        let t = MatchIdentifier!(self.tokenizer.advance(), 
-                                 self.tokenizer.get_line_number(),
-                                 "変数名");
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Int),
+                            Token::Keyword(Keyword::Char),
+                            Token::Keyword(Keyword::Boolean),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Identifier(_));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         while let Some(t) = self.tokenizer.advance() {
@@ -156,85 +134,63 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                 Token::Symbol(',') => {
                     let _ = self.output.write((t.to_xml() + "\n").as_bytes());
                 },
-                _ => return ErrUnexpect!(self, "';' or ','")
+                _ => return ErrUnexpect!(t, self.tokenizer.get_line_number())
             }
 
-            let t = MatchIdentifier!(self.tokenizer.advance(), 
-                                     self.tokenizer.get_line_number(),
-                                     "変数名");
+            let t = MatchToken!(self.tokenizer.advance(),
+                                self.tokenizer.get_line_number(),
+                                Token::Identifier(_));
             let _ = self.output.write((t.to_xml() + "\n").as_bytes());
         }
 
-        Err("';' がありません".to_string())
+        ErrReachedEnd!()
     }
 
     fn compile_subroutine(&mut self) -> Result<(), String> {
         let _ = self.output.write(b"<subroutineDec>\n");
 
-        match self.tokenizer.get_current_token() {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Constructor) |
-                Token::Keyword(Keyword::Function) |
-                Token::Keyword(Keyword::Method) => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "'constructor', 'function', or 'method'")
-            },
-            None => return Err("'constructor', 'function' or 'method' がありません".to_string())
-        }
-
-        match self.tokenizer.advance() {
-            Some(t) => match t {
-                Token::Keyword(Keyword::Void) | Token::Keyword(Keyword::Int) | 
-                Token::Keyword(Keyword::Char) | 
-                Token::Keyword(Keyword::Boolean) |
-                Token::Identifier(_) => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "'void', 'int', 'char', 'boolean' or identifier")
-            },
-            None => return Err("'void', 'int', 'char', 'boolean', or identifier がありません".to_string())
-        }
-
-        let t = MatchIdentifier!(self.tokenizer.advance(),
-                                 self.tokenizer.get_line_number(),
-                                 "関数名");
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Constructor),
+                            Token::Keyword(Keyword::Function),
+                            Token::Keyword(Keyword::Method));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        match self.tokenizer.advance() {
-            Some(t) => match t {
-                Token::Symbol('(') => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "'('")
-            },
-            None => return Err("'(' がありません".to_string())
-        }
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Void),
+                            Token::Keyword(Keyword::Int),
+                            Token::Keyword(Keyword::Char),
+                            Token::Keyword(Keyword::Boolean),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('('));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        self.tokenizer.advance();
         self.compile_parameter_list()?;
 
         // compile_parameter_listは１つ先読みしているので、
         // ここではadvanceを呼ばずに現在のトークンを使う
-        match self.tokenizer.get_current_token() {
-            Some(t) => match t {
-                Token::Symbol(')') => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "')', 'int', 'char', 'boolean' or className")
-            },
-            None => return Err("')', 'int', 'char', 'boolean' or className がありません".to_string())
-        }
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol(')'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        match self.tokenizer.advance() {
-            Some(t) => match t {
-                Token::Symbol('{') => {
-                    let _ = self.output.write(b"<subroutineBody>\n");
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                },
-                _ => return ErrUnexpect!(self, "'{'")
-            },
-            None => return Err("'{' がありません".to_string())
-        }
+        let _ = self.output.write(b"<subroutineBody>\n");
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('{'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         while let Some(t) = self.tokenizer.advance() {
             match t {
@@ -248,22 +204,41 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
 
         self.compile_statements()?;
 
-        match self.tokenizer.get_current_token() {
-            Some(t) => match t {
-                Token::Symbol('}') => {
-                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-                    let _ = self.output.write(b"</subroutineBody>\n");
-                    let _ = self.output.write(b"</subroutineDec>\n");
-                },
-                _ => return ErrUnexpect!(self, "'}'")
-            },
-            None => return Err("'}' がありません".to_string())
-        }
-        
+        // compile_statementsは１つ先読みしているので、
+        // ここではadvanceを呼ばずに現在のトークンを使う
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('}'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let _ = self.output.write(b"</subroutineBody>\n");
+        let _ = self.output.write(b"</subroutineDec>\n");
+
         Ok(())
     }
 
     fn compile_parameter_list(&mut self) -> Result<(), String> {
+        /*
+        再帰呼び出しで妥協しよう
+        */
+        let t = match self.tokenizer.get_current_token() {
+            Some(t) => match t {
+                Token::Keyword(Keyword::Int) | 
+                Token::Keyword(Keyword::Char) |
+                Token::Keyword(Keyword::Boolean) |
+                Token::Identifier(_) => t,
+                // typeでなければreturnする
+                _ => return Ok(())
+            },
+            None => return ErrReachedEnd!()
+        };
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        // let t = MatchToken!(self.tokenizer.get_current_token(),
+        //                     self.tokenizer.get_line_number(),
+        //                     Token::Symbol('}'));
+        // let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
         self.tokenizer.advance();
         Ok(())
     }
@@ -273,6 +248,7 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
     }
 
     fn compile_statements(&mut self) -> Result<(), String> {
+        // self.tokenizer.advance();
         Ok(())
     }
 }
