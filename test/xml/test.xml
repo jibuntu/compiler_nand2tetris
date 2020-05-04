@@ -1,6 +1,6 @@
 <class>
 <keyword> class </keyword>
-<identifier> test </identifier>
+<identifier> Test </identifier>
 <symbol> { </symbol>
 <classVarDec>
   <keyword> static </keyword>
@@ -11,10 +11,21 @@
 <classVarDec>
   <keyword> field </keyword>
   <keyword> int </keyword>
-  <identifier> name </identifier>
-  <symbol> , </symbol>
   <identifier> name2 </identifier>
+  <symbol> , </symbol>
+  <identifier> name3 </identifier>
   <symbol> ; </symbol>
 </classVarDec>
+<subroutineDec>
+  <keyword> constructor </keyword>
+  <keyword> void </keyword>
+  <identifier> new </identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <subroutineBody>
+    <symbol> { </symbol>
+    <symbol> } </symbol>
+  </subroutineBody>
+</subroutineDec>
 <symbol> } </symbol>
 </class>

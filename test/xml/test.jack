@@ -1,4 +1,6 @@
-class test {
+class Test {
   static int name;
-  field int name, name2;
+  field int name2, name3;
+
+  constructor void new () {}
 }
