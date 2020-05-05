@@ -1,31 +1,64 @@
 <class>
-<keyword> class </keyword>
-<identifier> Test </identifier>
-<symbol> { </symbol>
-<classVarDec>
-  <keyword> static </keyword>
-  <keyword> int </keyword>
-  <identifier> name </identifier>
-  <symbol> ; </symbol>
-</classVarDec>
-<classVarDec>
-  <keyword> field </keyword>
-  <keyword> int </keyword>
-  <identifier> name2 </identifier>
-  <symbol> , </symbol>
-  <identifier> name3 </identifier>
-  <symbol> ; </symbol>
-</classVarDec>
-<subroutineDec>
-  <keyword> constructor </keyword>
-  <keyword> void </keyword>
-  <identifier> new </identifier>
-  <symbol> ( </symbol>
-  <symbol> ) </symbol>
-  <subroutineBody>
+    <keyword> class </keyword>
+    <identifier> Test </identifier>
     <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> constructor </keyword>
+        <keyword> void </keyword>
+        <identifier> new </identifier>
+        <symbol> ( </symbol>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> snake </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> int </keyword>
+            <identifier> ufo </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
     <symbol> } </symbol>
-  </subroutineBody>
-</subroutineDec>
-<symbol> } </symbol>
 </class>

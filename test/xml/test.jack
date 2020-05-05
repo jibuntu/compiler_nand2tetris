@@ -3,4 +3,7 @@ class Test {
   field int name2, name3;
 
   constructor void new () {}
+  method void snake (int ufo) {}
+  method void ekans (boolean ofu, Alien tt) {
+  }
 }
