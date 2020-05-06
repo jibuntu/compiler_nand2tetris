@@ -57,6 +57,20 @@
         <symbol> ) </symbol>
         <subroutineBody>
             <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> boolean </keyword>
+                <identifier> isTest </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> Location </identifier>
+                <identifier> chiangmai </identifier>
+                <symbol> , </symbol>
+                <identifier> shanghai </identifier>
+                <symbol> ; </symbol>
+            </varDec>
             <symbol> } </symbol>
         </subroutineBody>
     </subroutineDec>

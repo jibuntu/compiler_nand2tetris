@@ -260,7 +260,53 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
     }
 
     fn compile_var_dec(&mut self) -> Result<(), String> {
-        Ok(())
+        let _ = self.output.write(b"<varDec>\n");
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Var));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Int),
+                            Token::Keyword(Keyword::Char),
+                            Token::Keyword(Keyword::Boolean),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Identifier(_));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        loop {
+            match self.tokenizer.advance() {
+                Some(t) => match t {
+                    // セミコロンだったらreturnする
+                    Token::Symbol(';') => {
+                        let _ = self.output.write(
+                            (t.to_xml() + "\n").as_bytes());
+                        let _ = self.output.write(b"</varDec>\n");
+                        return Ok(())
+                    },
+                    Token::Symbol(',') => {
+                        let _ = self.output.write(
+                            (t.to_xml() + "\n").as_bytes());
+                    },
+                    _ => return ErrUnexpect!(t, self.tokenizer.get_line_number())
+                },
+                None => return ErrReachedEnd!()
+            }
+
+            let t = MatchToken!(self.tokenizer.advance(),
+                                self.tokenizer.get_line_number(),
+                                Token::Keyword(Keyword::Int),
+                                Token::Keyword(Keyword::Char),
+                                Token::Keyword(Keyword::Boolean),
+                                Token::Identifier(_));
+            let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+        }
     }
 
     fn compile_statements(&mut self) -> Result<(), String> {
