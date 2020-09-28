@@ -1,0 +1,4 @@
+class ClassVarDec {
+  static int name;
+  field int name2, name3;
+}

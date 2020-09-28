@@ -1,6 +1,6 @@
 <class>
     <keyword> class </keyword>
-    <identifier> Test </identifier>
+    <identifier> VarDec </identifier>
     <symbol> { </symbol>
     <classVarDec>
         <keyword> static </keyword>
@@ -71,13 +71,8 @@
                 <identifier> shanghai </identifier>
                 <symbol> ; </symbol>
             </varDec>
-            <letStatement>
-                <keyword> let </keyword>
-                <identifier> shanghai </identifier>  
-                <symbol> = </symbol>
-            </letStatement>
             <symbol> } </symbol>
         </subroutineBody>
     </subroutineDec>
     <symbol> } </symbol>
-</class>
+<class>

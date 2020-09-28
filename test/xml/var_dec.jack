@@ -1,4 +1,4 @@
-class Test {
+class VarDec {
   static int name;
   field int name2, name3;
 
@@ -7,7 +7,5 @@ class Test {
   method void ekans (boolean ofu, Alien tt) {
     var boolean isTest;
     var Location chiangmai, shanghai;
-
-    let shanghai = 
   }
 }

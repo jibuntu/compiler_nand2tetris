@@ -1,0 +1,20 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> ClassVarDec </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <symbol> } </symbol>
+</class>
