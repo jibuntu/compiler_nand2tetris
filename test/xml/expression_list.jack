@@ -1,0 +1,9 @@
+class ExpressionList {
+  method void ekans (boolean ofu, Alien tt) {
+    var int number;
+    let number = func();
+    let number = func(0);
+    let number = func(0, null, true);
+    let number = func(0 + 1, 0 - 1 * 2);
+  }
+}

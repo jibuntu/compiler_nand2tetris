@@ -1,0 +1,14 @@
+class Let {
+  static int name;
+  field int name2, name3;
+
+  constructor void new () {}
+  method void snake (int ufo) {}
+  method void ekans (boolean ofu, Alien tt) {
+    var boolean isTest;
+    var Location chiangmai, shanghai;
+    var int number;
+
+    let number = 100;
+  }
+}

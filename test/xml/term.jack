@@ -1,0 +1,45 @@
+// termで使えるすべての要素を使うテストをする
+
+class Term {
+  static int name;
+  field int name2, name3;
+
+  constructor void new () {}
+  method void snake (int ufo) {}
+  method void ekans (boolean ofu, Alien tt) {
+    var boolean isTest;
+    var Location chiangmai, shanghai;
+    var String name;
+    var int number;
+    var int len;
+    var Array arr;
+
+
+    let number = 100 + 200;
+    let name = "NAME!";
+    let isTest = true;
+    let isTest = false;
+    let name = null;
+    let len = number;
+
+    // 配列の使用
+    let number = arr[0];
+    let number = arr[0 + 1];
+
+    // 関数の使用
+    let number = func();
+    let number = func(true, 0 + 1);
+
+    // メソッドの使用
+    let number = cls.func(0, null);
+
+    // カッコで囲われた式
+    let number = (1); 
+    let number = (100 + 200); 
+    let number = (arr[1 + 2] + func(true, 0 + 1)); 
+    
+    // 単項演算子
+    let number = -1; 
+    let number = -1 + -1; 
+  }
+}

@@ -30,8 +30,11 @@ function t () {
 
 cargo build
 
-t "test"
 t "class"
 t "class_var_dec"
 t "subroutine_dec"
 t "var_dec"
+t "let"
+t "expression"
+t "term"
+t "expression_list"

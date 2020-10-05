@@ -1,0 +1,411 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> Term </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> constructor </keyword>
+        <keyword> void </keyword>
+        <identifier> new </identifier>
+        <symbol> ( </symbol>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> snake </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> int </keyword>
+            <identifier> ufo </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> boolean </keyword>
+                <identifier> isTest </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> Location </identifier>
+                <identifier> chiangmai </identifier>
+                <symbol> , </symbol>
+                <identifier> shanghai </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> int </keyword>
+                <identifier> number </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> int </keyword>
+                <identifier> len </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> Array </identifier>
+                <identifier> arr </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <integerConstant> 100 </integerConstant>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                            <integerConstant> 200 </integerConstant>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> name </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <stringConstant> NAME! </stringConstant>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> isTest </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <keyword> true </keyword>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> isTest </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <keyword> false </keyword>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> name </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <keyword> null </keyword>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> len </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> number </identifier>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> arr </identifier>
+                            <symbol> [ </symbol>
+                            <expression>
+                                <term>
+                                    <integerConstant> 0 </integerConstant>
+                                </term>
+                            </expression>
+                            <symbol> ] </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> arr </identifier>
+                            <symbol> [ </symbol>
+                            <expression>
+                                <term>
+                                    <integerConstant> 0 </integerConstant>
+                                </term>
+                                <symbol> + </symbol>
+                                <term>
+                                    <integerConstant> 1 </integerConstant>
+                                </term>
+                            </expression>
+                            <symbol> ] </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                            <expressionList>
+                            </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                            <expressionList>
+                                <expression>
+                                    <term>
+                                       <keyword> true </keyword>
+                                    </term>
+                                </expression>
+                                <symbol> , </symbol>
+                                <expression>
+                                    <term>
+                                        <integerConstant> 0 </integerConstant>
+                                    </term>
+                                    <symbol> + </symbol>
+                                    <term>
+                                        <integerConstant> 1 </integerConstant>
+                                    </term>
+                                </expression>
+                            </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> cls </identifier>
+                            <symbol> . </symbol>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                            <expressionList>
+                                <expression>
+                                    <term>
+                                        <integerConstant> 0 </integerConstant>
+                                    </term>
+                                </expression>
+                                <symbol> , </symbol>
+                                <expression>
+                                    <term>
+                                        <keyword> null </keyword>
+                                    </term>
+                                </expression>
+                            </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                        <symbol> ( </symbol>
+                            <expression>
+                                <term>
+                                    <integerConstant> 1 </integerConstant>
+                                </term>
+                            </expression>
+                        <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                        <symbol> ( </symbol>
+                            <expression>
+                                <term>
+                                    <integerConstant> 100 </integerConstant>
+                                </term>
+                                <symbol> + </symbol>
+                                <term>
+                                    <integerConstant> 200 </integerConstant>
+                                </term>
+                            </expression>
+                        <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                        <symbol> ( </symbol>
+                            <expression>
+                                <term>
+                                    <identifier> arr </identifier>
+                                    <symbol> [ </symbol>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 1 </integerConstant>
+                                        </term>
+                                        <symbol> + </symbol>
+                                        <term>
+                                            <integerConstant> 2 </integerConstant>
+                                        </term>
+                                    </expression>
+                                    <symbol> ] </symbol>
+                                </term>
+                                <symbol> + </symbol>
+                                <term>
+                                    <identifier> func </identifier>
+                                    <symbol> ( </symbol>
+                                    <expressionList>
+                                        <expression>
+                                            <term>
+                                               <keyword> true </keyword>
+                                            </term>
+                                        </expression>
+                                        <symbol> , </symbol>
+                                        <expression>
+                                            <term>
+                                                <integerConstant> 0 </integerConstant>
+                                            </term>
+                                            <symbol> + </symbol>
+                                            <term>
+                                                <integerConstant> 1 </integerConstant>
+                                            </term>
+                                        </expression>
+                                    </expressionList>
+                                    <symbol> ) </symbol>
+                                </term>
+                            </expression>
+                        <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <symbol> - </symbol>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <symbol> - </symbol>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                            <symbol> - </symbol>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>

@@ -1,0 +1,137 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> ExpressionList </identifier>
+    <symbol> { </symbol>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> int </keyword>
+                <identifier> number </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                                <expressionList>
+                                </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                                <expressionList>
+                                  <expression>
+                                    <term>
+                                      <integerConstant> 0 </integerConstant>
+                                    </term>
+                                  </expression>
+                                </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                                <expressionList>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 0 </integerConstant>
+                                        </term>
+                                    </expression>
+                                    <symbol> , </symbol>
+                                    <expression>
+                                        <term>
+                                            <keyword> null </keyword>
+                                        </term>
+                                    </expression>
+                                    <symbol> , </symbol>
+                                    <expression>
+                                        <term>
+                                            <keyword> true </keyword>
+                                        </term>
+                                    </expression>
+                                </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> number </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                        <term>
+                            <identifier> func </identifier>
+                            <symbol> ( </symbol>
+                                <expressionList>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 0 </integerConstant>
+                                        </term>
+                                        <symbol> + </symbol>
+                                        <term>
+                                            <integerConstant> 1 </integerConstant>
+                                        </term>
+                                    </expression>
+                                    <symbol> , </symbol>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 0 </integerConstant>
+                                        </term>
+                                        <symbol> - </symbol>
+                                        <term>
+                                            <integerConstant> 1 </integerConstant>
+                                        </term>
+                                        <symbol> * </symbol>
+                                        <term>
+                                            <integerConstant> 2 </integerConstant>
+                                        </term>
+                                    </expression>
+                                </expressionList>
+                            <symbol> ) </symbol>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </letStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>

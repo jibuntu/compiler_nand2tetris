@@ -1,0 +1,17 @@
+class Expression {
+  static int name;
+  field int name2, name3;
+
+  constructor void new () {}
+  method void snake (int ufo) {}
+  method void ekans (boolean ofu, Alien tt) {
+    var boolean isTest;
+    var Location chiangmai, shanghai;
+    var int number;
+
+    let number = 100 + 200;
+    let number = 1 + 2 + 3;
+    let number = 1 + 2 - 3 * 4 / 5;
+    let isTest = 1 = 3;
+  }
+}
