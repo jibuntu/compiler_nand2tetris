@@ -1,0 +1,85 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> While </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <whileStatement>
+                    <keyword> while </keyword>
+                    <symbol> ( </symbol>
+                    <expression>
+                        <term>
+                            <integerConstant> 1 </integerConstant>
+                        </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    <symbol> { </symbol>
+                    <statements>
+                        <whileStatement>
+                            <keyword> while </keyword>
+                            <symbol> ( </symbol>
+                            <expression>
+                                <term>
+                                    <integerConstant> 0 </integerConstant>
+                                </term>
+                            </expression>
+                            <symbol> ) </symbol>
+                            <symbol> { </symbol>
+                            <statements>
+                                <letStatement>
+                                    <keyword> let </keyword>
+                                    <identifier> name </identifier>
+                                    <symbol> = </symbol>
+                                    <expression>
+                                        <term>
+                                            <stringConstant> eman </stringConstant>
+                                        </term>
+                                    </expression>
+                                    <symbol> ; </symbol>
+                                </letStatement>
+                            </statements>
+                            <symbol> } </symbol>
+                        </whileStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                </whileStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>

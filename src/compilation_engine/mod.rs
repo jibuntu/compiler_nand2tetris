@@ -334,10 +334,10 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         loop {
             match self.tokenizer.get_current_token() {
                 Some(t) => match t {
-                    // TODO: do, while, return, ifを実装する
+                    // TODO: return, ifを実装する
                     Token::Keyword(Keyword::Do) => self.compile_do()?,
                     Token::Keyword(Keyword::Let) => self.compile_let_statement()?,
-                    // Token::Keyword(Keyword::While) => self.compile_let_statement()?,
+                    Token::Keyword(Keyword::While) => self.compile_while()?,
                     // Token::Keyword(Keyword::Return) => self.compile_let_statement()?,
                     // Token::Keyword(Keyword::If) => self.compile_let_statement()?,
                     _ => break
@@ -450,6 +450,47 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
  
         let _ = self.output.write(b"</letStatement>\n");
+        Ok(())
+    }
+    
+    /*
+     * 'while' '(' expression ')' '{' statements '}'
+     * */
+    fn compile_while(&mut self) -> Result<(), String> {
+        let _ = self.output.write(b"<whileStatement>\n");
+ 
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::While));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('('));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        self.tokenizer.advance();
+        self.compile_expression()?;
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol(')'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('{'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        self.tokenizer.advance();
+        self.compile_statements()?;
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('}'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let _ = self.output.write(b"</whileStatement>\n");
         Ok(())
     }
 
