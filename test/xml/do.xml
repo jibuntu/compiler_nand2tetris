@@ -1,0 +1,93 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> Do </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> func </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> func </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                        <expression>
+                            <term>
+                               <keyword> true </keyword>
+                            </term>
+                        </expression>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> func </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                        <expression>
+                            <term>
+                               <keyword> true </keyword>
+                            </term>
+                        </expression>
+                        <symbol> , </symbol>
+                        <expression>
+                            <term>
+                                <integerConstant> 0 </integerConstant>
+                            </term>
+                            <symbol> + </symbol>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                        </expression>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                </doStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>

@@ -1,0 +1,12 @@
+class Do {
+  static int name;
+  field int name2, name3;
+
+  method void ekans (boolean ofu, Alien tt) {
+    var String name;
+
+    do func();
+    do func(true);
+    do func(true, 0 + 1);
+  }
+}
