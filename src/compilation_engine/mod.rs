@@ -343,18 +343,15 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         loop {
             match self.tokenizer.get_current_token() {
                 Some(t) => match t {
-                    // TODO: ifを実装する
                     Token::Keyword(Keyword::Do) => self.compile_do()?,
                     Token::Keyword(Keyword::Let) => self.compile_let_statement()?,
                     Token::Keyword(Keyword::While) => self.compile_while()?,
                     Token::Keyword(Keyword::Return) => self.compile_return()?,
-                    // Token::Keyword(Keyword::If) => self.compile_let_statement()?,
+                    Token::Keyword(Keyword::If) => self.compile_if()?,
                     _ => break
                 },
                 None => return ErrReachedEnd!()
             }
-
-            self.tokenizer.advance();
         }
 
         let _ = self.output.write(b"</statements>\n");
@@ -532,6 +529,72 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         }
         
         let _ = self.output.write(b"</returnStatement>\n");
+        self.tokenizer.advance();
+        Ok(())
+    }
+
+    /*
+     * 'if' '(' expression ')' '{' statements '}' ('else' '{' statements '}' )?
+     * */
+    fn compile_if(&mut self) -> Result<(), String> {
+        let _ = self.output.write(b"<ifStatement>\n");
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::If));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('('));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        self.tokenizer.advance();
+        self.compile_expression()?;
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol(')'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        let t = MatchToken!(self.tokenizer.advance(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('{'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        self.tokenizer.advance();
+        self.compile_statements()?;
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Symbol('}'));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        match self.tokenizer.advance() {
+            Some(t) => {
+                if let Token::Keyword(Keyword::Else) = t {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+                    let t = MatchToken!(self.tokenizer.advance(),
+                                        self.tokenizer.get_line_number(),
+                                        Token::Symbol('{'));
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+                    self.tokenizer.advance();
+                    self.compile_statements()?;
+
+                    let t = MatchToken!(self.tokenizer.get_current_token(),
+                                        self.tokenizer.get_line_number(),
+                                        Token::Symbol('}'));
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+                    self.tokenizer.advance();
+                }
+            },
+            None => return ErrReachedEnd!()
+        }
+
+        let _ = self.output.write(b"</ifStatement>\n");
         Ok(())
     }
 

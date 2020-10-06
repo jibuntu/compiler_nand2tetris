@@ -1,0 +1,20 @@
+class If {
+  static int name;
+  field int name2, name3;
+
+  method void ekans (boolean ofu, Alien tt) {
+    var String name;
+
+    if ( true ) {
+      let name = "eman";
+    }
+
+    if ( false ) {
+      let name = "eman";
+    } else {
+      let name = "EMAN";
+    }
+
+    return;
+  }
+}
