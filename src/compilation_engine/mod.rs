@@ -422,7 +422,7 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         let _ = self.output.write(b"</doStatement>\n");
-
+        self.tokenizer.advance();
         Ok(())
     }
 
@@ -441,8 +441,27 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                             self.tokenizer.get_line_number(),
                             Token::Identifier(_));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        match self.tokenizer.advance() {
+            Some(t) => {
+                if let Token::Symbol('[') = t {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+                    self.tokenizer.advance();
+                    self.compile_expression()?;
+
+                    let t = MatchToken!(self.tokenizer.get_current_token(),
+                                        self.tokenizer.get_line_number(),
+                                        Token::Symbol(']'));
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                    
+                    self.tokenizer.advance();
+                }
+            },
+            None => return ErrReachedEnd!()
+        }
  
-        let t = MatchToken!(self.tokenizer.advance(),
+        let t = MatchToken!(self.tokenizer.get_current_token(),
                             self.tokenizer.get_line_number(),
                             Token::Symbol('='));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
@@ -456,6 +475,7 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
  
         let _ = self.output.write(b"</letStatement>\n");
+        self.tokenizer.advance();
         Ok(())
     }
     
@@ -497,6 +517,7 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         let _ = self.output.write(b"</whileStatement>\n");
+        self.tokenizer.advance();
         Ok(())
     }
 

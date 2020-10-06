@@ -8,7 +8,9 @@ class Let {
     var boolean isTest;
     var Location chiangmai, shanghai;
     var int number;
+    var Array arr;
 
     let number = 100;
+    let arr[0] = 1;
   }
 }
