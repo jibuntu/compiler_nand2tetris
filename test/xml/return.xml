@@ -1,0 +1,120 @@
+<class>
+    <keyword> class </keyword>
+    <identifier> Return </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> int </keyword>
+        <identifier> name </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> name2 </identifier>
+        <symbol> , </symbol>
+        <identifier> name3 </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ekans </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> boolean </keyword>
+            <identifier> ofu </identifier>
+            <symbol> , </symbol>
+            <identifier> Alien </identifier>
+            <identifier> tt </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                </returnStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> akubi </identifier>
+        <symbol> ( </symbol>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <returnStatement>
+                    <keyword> return </keyword>
+                        <expression>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                        </expression>
+                    <symbol> ; </symbol>
+                </returnStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <subroutineDec>
+        <keyword> method </keyword>
+        <keyword> void </keyword>
+        <identifier> ebi </identifier>
+        <symbol> ( </symbol>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <identifier> String</identifier>
+                <identifier> name </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <returnStatement>
+                    <keyword> return </keyword>
+                        <expression>
+                            <term>
+                                <integerConstant> 1 </integerConstant>
+                            </term>
+                            <symbol> + </symbol>
+                            <term>
+                                <symbol> ( </symbol>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 2 </integerConstant>
+                                        </term>
+                                        <symbol> + </symbol>
+                                        <term>
+                                            <integerConstant> 3 </integerConstant>
+                                        </term>
+                                    </expression>
+                                <symbol> ) </symbol>
+                            </term>
+                        </expression>
+                    <symbol> ; </symbol>
+                </returnStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>

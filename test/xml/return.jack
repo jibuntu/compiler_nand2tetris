@@ -1,0 +1,20 @@
+class Return {
+  static int name;
+  field int name2, name3;
+
+  method void ekans (boolean ofu, Alien tt) {
+    var String name;
+
+    return;
+  }
+  method void akubi () {
+    var String name;
+
+    return 1;
+  }
+  method void ebi () {
+    var String name;
+
+    return 1 + ( 2 + 3 );
+  }
+}

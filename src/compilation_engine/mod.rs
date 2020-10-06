@@ -5,6 +5,15 @@ use super::tokenizer::token::Token;
 use super::tokenizer::token::Keyword;
 
 
+#[cfg(debug_assertions)]
+macro_rules! ErrReachedEnd {
+    () => {
+        Err(format!("reached end of file while parsing. DEBUG: line {}", 
+                    line!()))
+    };
+}
+
+#[cfg(not(debug_assertions))]
 macro_rules! ErrReachedEnd {
     () => {
         Err("reached end of file while parsing".to_string())
@@ -334,11 +343,11 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         loop {
             match self.tokenizer.get_current_token() {
                 Some(t) => match t {
-                    // TODO: return, ifを実装する
+                    // TODO: ifを実装する
                     Token::Keyword(Keyword::Do) => self.compile_do()?,
                     Token::Keyword(Keyword::Let) => self.compile_let_statement()?,
                     Token::Keyword(Keyword::While) => self.compile_while()?,
-                    // Token::Keyword(Keyword::Return) => self.compile_let_statement()?,
+                    Token::Keyword(Keyword::Return) => self.compile_return()?,
                     // Token::Keyword(Keyword::If) => self.compile_let_statement()?,
                     _ => break
                 },
@@ -491,6 +500,38 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
         let _ = self.output.write(b"</whileStatement>\n");
+        Ok(())
+    }
+
+    /*
+     * 'return' expression? ';'
+     * */
+    fn compile_return(&mut self) -> Result<(), String> {
+        let _ = self.output.write(b"<returnStatement>\n");
+
+        let t = MatchToken!(self.tokenizer.get_current_token(),
+                            self.tokenizer.get_line_number(),
+                            Token::Keyword(Keyword::Return));
+        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+
+        match self.tokenizer.advance() {
+            Some(t) => match t {
+                Token::Symbol(';') => {
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                },
+                _ => {
+                    self.compile_expression()?;
+
+                    let t = MatchToken!(self.tokenizer.get_current_token(),
+                                        self.tokenizer.get_line_number(),
+                                        Token::Symbol(';'));
+                    let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                }
+            },
+            None => return ErrReachedEnd!()
+        }
+        
+        let _ = self.output.write(b"</returnStatement>\n");
         Ok(())
     }
 
