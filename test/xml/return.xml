@@ -51,6 +51,8 @@
         <keyword> void </keyword>
         <identifier> akubi </identifier>
         <symbol> ( </symbol>
+        <parameterList>
+        </parameterList>
         <symbol> ) </symbol>
         <subroutineBody>
             <symbol> { </symbol>
@@ -79,6 +81,8 @@
         <keyword> void </keyword>
         <identifier> ebi </identifier>
         <symbol> ( </symbol>
+        <parameterList>
+        </parameterList>
         <symbol> ) </symbol>
         <subroutineBody>
             <symbol> { </symbol>

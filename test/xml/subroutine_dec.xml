@@ -21,6 +21,8 @@
         <keyword> void </keyword>
         <identifier> new </identifier>
         <symbol> ( </symbol>
+        <parameterList>
+        </parameterList>
         <symbol> ) </symbol>
         <subroutineBody>
             <symbol> { </symbol>

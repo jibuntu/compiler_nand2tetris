@@ -195,11 +195,9 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
                             Token::Symbol('('));
         let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-        // 閉じ括弧でなければcompile_parameter_listを実行する
-        if self.tokenizer.advance() != Some(&Token::Symbol(')')) {
-            self.compile_parameter_list()?;
-        }
-        
+        self.tokenizer.advance();
+        self.compile_parameter_list()?;
+
         // ここではadvanceを呼ばずに現在のトークンを使う
         let t = MatchToken!(self.tokenizer.get_current_token(),
                             self.tokenizer.get_line_number(),
@@ -250,36 +248,39 @@ impl<R: Read + Seek, W: Write> CompilationEngine<R, W> {
     fn compile_parameter_list(&mut self) -> Result<(), String> {
         let _ = self.output.write(b"<parameterList>\n");
 
+        if let Some(Token::Symbol(')')) = self.tokenizer.get_current_token() {
+            // parameter listが空のときはここでリターンする
+            let _ = self.output.write(b"</parameterList>\n");
+            return Ok(())
+        }
+
         loop {
-            let t = match self.tokenizer.get_current_token() {
-                Some(t) => match t {
-                    Token::Keyword(Keyword::Int) | 
-                    Token::Keyword(Keyword::Char) |
-                    Token::Keyword(Keyword::Boolean) |
-                    Token::Identifier(_) => t,
-                    // typeでなければbrearする
-                    _ => break
-                },
-                None => return ErrReachedEnd!()
-            };
+            let t = MatchToken!(self.tokenizer.get_current_token(),
+                                self.tokenizer.get_line_number(),
+                                Token::Keyword(Keyword::Int),
+                                Token::Keyword(Keyword::Char),
+                                Token::Keyword(Keyword::Boolean),
+                                Token::Identifier(_));
             let _ = self.output.write((t.to_xml() + "\n").as_bytes());
-
-
+            
             let t = MatchToken!(self.tokenizer.advance(),
                                 self.tokenizer.get_line_number(),
                                 Token::Identifier(_));
             let _ = self.output.write((t.to_xml() + "\n").as_bytes());
 
-            let t = match self.tokenizer.advance() {
+            match self.tokenizer.advance() {
                 Some(t) => match t {
-                    Token::Symbol(',') => t,
-                    // それ以外の文字はbreakする
-                    _ => break
+                    // 閉じカッコのときはbreakする
+                    Token::Symbol(')') => break,
+                    // ,のときはそのまま続ける
+                    Token::Symbol(',') => {
+                        let _ = self.output.write((t.to_xml() + "\n").as_bytes());
+                    },
+                    _ => return ErrUnexpect!(t, self.tokenizer.get_line_number())
                 },
                 None => return ErrReachedEnd!()
-            };
+            }
 
-            let _ = self.output.write((t.to_xml() + "\n").as_bytes());
             self.tokenizer.advance();
         }
 
