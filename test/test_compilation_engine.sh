@@ -48,3 +48,11 @@ t "if"
 test "../../ExpressionLessSquare/Main.jack" "../../ExpressionLessSquare/Main.xml"
 test "../../ExpressionLessSquare/Square.jack" "../../ExpressionLessSquare/Square.xml"
 test "../../ExpressionLessSquare/SquareGame.jack" "../../ExpressionLessSquare/SquareGame.xml"
+
+# Square 
+test "../../Square/Main.jack" "../../Square/Main.xml"
+test "../../Square/Square.jack" "../../Square/Square.xml"
+test "../../Square/SquareGame.jack" "../../Square/SquareGame.xml"
+
+# ArrayTest
+test "../../ArrayTest/Main.jack" "../../ArrayTest/Main.xml"
