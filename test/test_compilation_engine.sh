@@ -28,6 +28,7 @@ function t () {
 }
 
 
+
 cargo build
 
 t "class"
@@ -42,3 +43,8 @@ t "do"
 t "while"
 t "return"
 t "if"
+
+# ExpressionLessSquare
+test "../../ExpressionLessSquare/Main.jack" "../../ExpressionLessSquare/Main.xml"
+test "../../ExpressionLessSquare/Square.jack" "../../ExpressionLessSquare/Square.xml"
+test "../../ExpressionLessSquare/SquareGame.jack" "../../ExpressionLessSquare/SquareGame.xml"
