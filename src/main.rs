@@ -6,6 +6,7 @@ mod tokenizer;
 use tokenizer::Tokenizer;
 mod compilation_engine;
 use compilation_engine::CompilationEngine;
+mod symbol_table;
 
 
 fn main() {
